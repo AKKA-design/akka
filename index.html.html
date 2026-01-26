@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKKA | Neural Alchemist — Master Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --royal-blue: #001a4d;
+            --electric-violet: #1a0033;
+            --obsidian: #010409;
+            --synaptic-orange: #ff6b00;
+        }
+
+        body {
+            background-color: var(--obsidian);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* FIXED BACKGROUND: MUST BE Z-INDEX 0 */
+        #neural-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0; 
+            pointer-events: none;
+            background: radial-gradient(circle at center, var(--royal-blue) 0%, var(--obsidian) 100%);
+        }
+
+        /* CONTENT WRAPPER: MUST BE Z-INDEX 10 */
+        #main-stage {
+            position: relative;
+            z-index: 10;
+        }
+
+        .viewport {
+            display: flex;
+            align-items: center;
+            height: 100vh;
+            width: fit-content;
+            padding: 0 10vw;
+        }
+
+        /* WORK CARDS: CLEAR & SHARP */
+        .work-card {
+            flex-shrink: 0;
+            width: 38vw;
+            margin-right: 12vw;
+            position: relative;
+            /* Default state: Visible and Sharp */
+            opacity: 1;
+            filter: blur(0px);
+            transform: scale(1);
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Subtle focus effect only for the center image */
+        .work-card.focus {
+            transform: scale(1.05);
+            z-index: 20;
+        }
+
+        .image-wrapper {
+            position: relative;
+            background: #000;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            display: block;
+        }
+
+        .syncopate { font-family: 'Syncopate', sans-serif; font-weight: 700; }
+
+        /* UI OVERLAYS */
+        nav { z-index: 100; mix-blend-difference: exclusion; }
+        
+        .progress-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 10vw;
+            width: 80vw;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        .progress-fill {
+            height: 100%; width: 0%;
+            background: var(--synaptic-orange);
+            box-shadow: 0 0 15px var(--synaptic-orange);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="neural-canvas"></canvas>
+
+    <nav class="fixed top-0 w-full p-10 flex justify-between items-start">
+        <div>
+            <h1 class="syncopate text-2xl tracking-[0.5em]">AKKA</h1>
+            <p class="text-[9px] uppercase tracking-[0.8em] text-orange-500 mt-2">Neural Alchemist</p>
+        </div>
+        <div class="text-right">
+            <p class="text-[10px] uppercase tracking-[0.4em] text-orange-500">Vol. 1 — 50 Archive</p>
+            <p class="text-[8px] opacity-40 mt-1 uppercase italic">جاء الشتاء بحر وسماء</p>
+        </div>
+    </nav>
+
+    <div id="main-stage">
+        <div class="viewport" id="loom">
+            <div class="work-card flex flex-col justify-center">
+                <h2 class="syncopate text-7xl leading-tight mb-6">THE<br><span class="text-orange-500">MASTER</span><br>LOOM</h2>
+                <p class="max-w-xs text-[10px] opacity-60 uppercase tracking-[0.4em] leading-loose">
+                    Processing 50 Synaptic nodes. All systems clear.
+                </p>
+            </div>
+            </div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const loom = document.getElementById('loom');
+        const MAX_IMAGES = 50;
+
+        // 1. DYNAMIC INJECTION (1 to 50)
+        for (let i = 1; i <= MAX_IMAGES; i++) {
+            const card = document.createElement('div');
+            card.className = 'work-card';
+            card.innerHTML = `
+                <div class="image-wrapper">
+                    <img src="work${i}.jpg" alt="Work ${i}" onerror="this.closest('.work-card').style.display='none';">
+                </div>
+                <div class="mt-10 flex justify-between items-end">
+                    <div>
+                        <p class="text-[8px] text-orange-500 mb-1 tracking-widest uppercase">Node Sequence 0${i}</p>
+                        <h3 class="syncopate text-2xl uppercase tracking-tighter">ALCH_ARCHIVE_${i}</h3>
+                    </div>
+                    <span class="text-4xl font-light opacity-5">#${i}</span>
+                </div>
+            `;
+            loom.appendChild(card);
+        }
+
+        // 2. HORIZONTAL SCROLL PHYSICS
+        let sections = gsap.utils.toArray(".work-card");
+        let scrollTween = gsap.to(sections, {
+            xPercent: -100 * (sections.length - 1.2), // Adjusted to ensure the last one shows fully
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#main-stage",
+                pin: true,
+                scrub: 1,
+                end: () => "+=" + loom.offsetWidth,
+                onUpdate: (self) => {
+                    document.getElementById('fill').style.width = (self.progress * 100) + "%";
+                }
+            }
+        });
+
+        // 3. CENTER FOCUS DETECTION (Optional scale up, NO BLUR)
+        sections.forEach((section) => {
+            ScrollTrigger.create({
+                trigger: section,
+                containerAnimation: scrollTween,
+                start: "left center",
+                end: "right center",
+                onEnter: () => section.classList.add("focus"),
+                onLeave: () => section.classList.remove("focus"),
+                onEnterBack: () => section.classList.add("focus"),
+                onLeaveBack: () => section.classList.remove("focus")
+            });
+        });
+
+        // 4. SYNAPTIC BACKGROUND (CLEAN & SHARP)
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        let dots = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        for (let i = 0; i < 80; i++) {
+            dots.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            dots.forEach(p1 => {
+                p1.x += p1.vx; p1.y += p1.vy;
+                if (p1.x < 0 || p1.x > canvas.width) p1.vx *= -1;
+                if (p1.y < 0 || p1.y > canvas.height) p1.vy *= -1;
+
+                dots.forEach(p2 => {
+                    let d = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (d < 160) {
+                        ctx.strokeStyle = `rgba(138, 43, 226, ${0.1 * (1 - d/160)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                });
+                ctx.fillStyle = "rgba(255, 107, 0, 0.4)";
+                ctx.beginPath(); ctx.arc(p1.x, p1.y, 1.2, 0, Math.PI * 2); ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
