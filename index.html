@@ -3,157 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AKKA | LA TRAME NEURALE</title>
+    <title>AKKA | Neural Loom — Archives Maîtres</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Space+Mono&family=Syncopate:wght@700&display=swap');
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --blue-royale: #4169E1;
-            --blue-dark: #020b1e; /* Ton Noir Obsidian Profond */
-            --blue-light: #6b8dd6;
-            --white: #FAFAFA;
-            --accent: #ffaa00; /* Ton Orange Synaptique */
-            --cyan: #00f3ff;
+            --royal-blue: #020b1e; 
+            --obsidian: #000000;
+            --synaptic-orange: #ffaa00; 
+            --loom-cyan: #00f3ff; 
         }
 
         body {
+            background-color: var(--obsidian);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            scrollbar-width: none; 
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        /* --- 1. NEURAL BACKGROUND --- */
+        #neural-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none;
             background: radial-gradient(circle at center, #0a1936 0%, #000000 100%);
-            color: var(--white);
-            font-family: 'Space Mono', monospace;
-            overflow: hidden;
-            cursor: none;
-            height: 100vh;
-            width: 100vw;
         }
 
-        /* --- GLITCH TEXT EFFECT --- */
-        .glitch { position: relative; display: inline-block; }
+        #main-stage {
+            position: relative; z-index: 10; height: 100vh; width: 100%; overflow: hidden; 
+        }
+
+        .viewport {
+            display: flex; align-items: center; height: 100%; width: fit-content; 
+            padding-left: 10vw; padding-right: 10vw; will-change: transform;
+        }
+
+        /* --- 2. AMPLIFIED GLITCH --- */
+        .glitch { position: relative; color: white; z-index: 1; }
+        
         .glitch::before, .glitch::after {
-            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
-        }
-        .glitch::before {
-            color: var(--accent); z-index: -1;
-            animation: glitch-1 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-        }
-        .glitch::after {
-            color: var(--cyan); z-index: -2;
-            animation: glitch-2 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-        }
-        @keyframes glitch-1 { 0% { transform: translate(0) } 20% { transform: translate(-2px, 2px) } 40% { transform: translate(-2px, -2px) } 60% { transform: translate(2px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: translate(0) } }
-        @keyframes glitch-2 { 0% { transform: translate(0) } 20% { transform: translate(2px, -2px) } 40% { transform: translate(2px, 2px) } 60% { transform: translate(-2px, -2px) } 80% { transform: translate(-2px, 2px) } 100% { transform: translate(0) } }
-
-        /* --- UI ELEMENTS --- */
-        #neural-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-
-        .header {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 40px 50px;
-            display: flex; justify-content: space-between; align-items: start; z-index: 100;
-            pointer-events: none;
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent; opacity: 0; z-index: -1; 
         }
 
-        .logo-block { pointer-events: auto; }
-        .logo { font-family: 'Syncopate', sans-serif; font-size: 24px; letter-spacing: 5px; text-transform: uppercase; font-weight: 700; color: #fff; }
-        .sub-logo { font-size: 10px; color: var(--accent); letter-spacing: 3px; margin-top: 5px; text-transform: uppercase; }
-
-        .contact-block { text-align: right; pointer-events: auto; }
-        .phone-number { 
-            font-family: 'Syncopate', sans-serif; font-size: 18px; color: var(--cyan); 
-            border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; 
-            background: rgba(0,0,0,0.3); transition: all 0.3s ease; text-decoration: none; display: inline-block;
+        .glitch::before { 
+            color: var(--synaptic-orange); 
+            animation: hyper-glitch-1 3s infinite linear alternate-reverse;
+            text-shadow: 2px 0 5px var(--synaptic-orange);
         }
-        .phone-number:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px var(--cyan); }
-
-        /* --- 3D GALLERY --- */
-        .synapse-gallery {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
-            transform-style: preserve-3d;
+        
+        .glitch::after { 
+            color: var(--loom-cyan); 
+            animation: hyper-glitch-2 2.5s infinite linear alternate-reverse; 
+            text-shadow: -2px 0 5px var(--loom-cyan);
         }
 
-        .synapse-card {
-            position: absolute; width: 400px; height: 320px; /* Adapted for mixed format */
-            transform-style: preserve-3d; cursor: pointer;
-            transition: transform 0.1s linear; /* Smoother for heavy scroll */
+        @keyframes hyper-glitch-1 {
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 2px); opacity: 0; }
+            5% { clip-path: inset(80% 0 10% 0); transform: translate(2px, -2px); opacity: 1; }
+            10% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); opacity: 1; }
+            15% { clip-path: inset(10% 0 70% 0); transform: translate(2px, -2px); opacity: 1; }
+            20% { opacity: 0; }
+            100% { opacity: 0; }
         }
 
-        .card-content {
-            width: 100%; height: 100%; position: relative; border-radius: 4px;
-            overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); 
-            background: #000; border: 1px solid rgba(255,255,255,0.1);
+        @keyframes hyper-glitch-2 {
+            0% { opacity: 0; }
+            50% { opacity: 0; }
+            55% { clip-path: inset(10% 0 60% 0); transform: translate(2px, 2px); opacity: 1; }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(-2px, -2px); opacity: 1; }
+            65% { clip-path: inset(30% 0 20% 0); transform: translate(2px, 0); opacity: 1; }
+            70% { opacity: 0; }
+            100% { opacity: 0; }
         }
 
-        .design-image {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.6s ease;
-        }
-        .synapse-card:hover .design-image { transform: scale(1.1); }
+        .signal-pulse { animation: pulse-opacity 3s infinite ease-in-out; text-shadow: 0 0 8px rgba(0, 243, 255, 0.6); }
+        @keyframes pulse-opacity { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
-        .card-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px;
-            background: linear-gradient(to top, #000, transparent);
-            opacity: 0; transition: opacity 0.3s ease;
+        /* --- 3. LOOM CARDS --- */
+        .work-card {
+            flex-shrink: 0; width: 35vw; margin-right: 10vw;
+            position: relative; display: flex; flex-direction: column; justify-content: center;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer;
         }
-        .synapse-card:hover .card-overlay { opacity: 1; }
-        .card-title { font-family: 'Syncopate', sans-serif; font-size: 12px; color: var(--accent); }
+        .work-card.focus { transform: scale(1.05); z-index: 20; }
+        .artifact-raw {
+            width: 100%; display: flex; justify-content: center; align-items: center;
+            min-height: 200px; overflow: hidden; border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .artifact-raw img {
+            width: 100%; height: auto; max-height: 70vh; object-fit: contain;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6); transition: transform 0.5s ease;
+        }
+        .work-card:hover .artifact-raw img { transform: scale(1.03); }
 
-        /* --- CURSOR --- */
-        .cursor {
-            position: fixed; width: 40px; height: 40px; 
-            border: 1px solid var(--white); border-radius: 50%; 
-            pointer-events: none; z-index: 2000;
-            transition: transform 0.1s ease; mix-blend-mode: exclusion;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .cursor::after { content: ''; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
-        .cursor.active { transform: scale(2); border-color: var(--accent); }
+        .meta-bar { margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; display: flex; justify-content: space-between; align-items: flex-end; }
+        .syncopate { font-family: 'Syncopate', sans-serif; font-weight: 700; }
+        nav { z-index: 100; mix-blend-difference: exclusion; }
+        
+        .progress-bar { position: fixed; bottom: 30px; left: 10vw; width: 60vw; height: 2px; background: rgba(255,255,255,0.1); z-index: 100; }
+        #fill { height: 100%; width: 0%; background: var(--synaptic-orange); box-shadow: 0 0 20px var(--synaptic-orange); }
 
-        /* --- DETAIL VIEW --- */
-        .detail-view {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(2, 11, 30, 0.95); z-index: 2000; 
-            display: flex; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
-            backdrop-filter: blur(10px);
+        /* --- 4. CONTACT NODE (UNFORGETTABLE UX) --- */
+        .contact-node {
+            position: relative; display: inline-block;
+            margin-top: 0.8rem; padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.4s ease;
+            overflow: hidden;
         }
-        .detail-view.active { opacity: 1; pointer-events: auto; }
+        .contact-node:hover {
+            border-color: var(--synaptic-orange);
+            background: rgba(255, 170, 0, 0.05);
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        .contact-node::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .contact-node:hover::after { left: 100%; }
+        
+        .contact-text {
+            font-family: 'Plus Jakarta Sans', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; color: white;
+            transition: color 0.3s;
+        }
+        .contact-node:hover .contact-text { color: var(--synaptic-orange); }
+
+
+        /* --- 5. SLIDE OVERLAY --- */
+        #detail-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(2, 11, 30, 0.85); 
+            z-index: 200; display: none; opacity: 0;
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+        }
 
         .detail-wrapper {
-            display: flex; width: 100%; height: 100%;
+            position: relative; z-index: 10; width: 100%; height: 100%;
+            display: flex; flex-direction: row; 
         }
 
         .detail-visual {
-            flex: 6; height: 100%; padding: 50px; display: flex; align-items: center; justify-content: center;
-            border-right: 1px solid rgba(255,255,255,0.1);
+            flex: 6; height: 100%; display: flex; align-items: center; justify-content: center;
+            padding: 4vw; border-right: 1px solid rgba(255,255,255,0.1);
         }
-        .detail-visual img { max-width: 100%; max-height: 90vh; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .detail-visual img {
+            max-width: 100%; max-height: 90vh; object-fit: contain;
+            box-shadow: 0 0 80px rgba(0,0,0,0.9);
+            transform: scale(0.95); opacity: 0; 
+        }
 
         .detail-info {
-            flex: 4; padding: 60px; display: flex; flex-direction: column; justify-content: center;
+            flex: 4; height: 100%; display: flex; flex-direction: column; 
+            justify-content: center; padding: 4vw; position: relative;
         }
 
-        .detail-meta { font-size: 10px; letter-spacing: 4px; color: var(--cyan); margin-bottom: 20px; }
-        .detail-title { 
-            font-family: 'Syncopate', sans-serif; font-size: 40px; line-height: 1.1; 
-            margin-bottom: 30px; text-transform: uppercase; color: #fff;
+        .data-label {
+            font-family: 'Syncopate', sans-serif; font-size: 10px; color: var(--loom-cyan);
+            letter-spacing: 0.3em; margin-bottom: 10px; opacity: 0.8;
+            display: flex; align-items: center; gap: 10px;
         }
-        .detail-desc { 
-            font-family: 'Playfair Display', serif; font-size: 20px; line-height: 1.6; 
-            color: #ddd; border-left: 2px solid var(--accent); padding-left: 20px; 
+        .data-label::before { content: ''; width: 20px; height: 1px; background: var(--loom-cyan); box-shadow: 0 0 5px var(--loom-cyan); }
+
+        #detail-title {
+            font-size: 3vw; line-height: 1.1; margin-bottom: 2rem; 
+            text-transform: uppercase; color: white;
+            text-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
         
-        .close-btn {
-            position: absolute; top: 40px; right: 40px; font-family: 'Syncopate', sans-serif;
-            color: var(--accent); cursor: pointer; font-size: 12px; letter-spacing: 2px;
-            border: 1px solid var(--accent); padding: 10px 20px; transition: all 0.3s;
+        #detail-desc {
+            font-size: 1.2rem; font-weight: 300; line-height: 1.6;
+            color: #e0e0e0; border-left: 2px solid var(--synaptic-orange);
+            padding-left: 20px; max-width: 500px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
         }
-        .close-btn:hover { background: var(--accent); color: #000; }
 
-        /* --- MOBILE --- */
+        .sci-footer {
+            margin-top: auto; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; width: 100%;
+            font-family: monospace; font-size: 10px; color: rgba(255,255,255,0.5);
+        }
+
+        .close-btn {
+            position: absolute; top: 30px; right: 30px; z-index: 50;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--synaptic-orange);
+            color: var(--synaptic-orange); padding: 10px 20px; cursor: pointer;
+            font-family: 'Syncopate', sans-serif; font-size: 10px; letter-spacing: 0.2em;
+            transition: all 0.3s;
+        }
+        .close-btn:hover { background: var(--synaptic-orange); color: black; }
+
+        .key-hint {
+            position: absolute; bottom: 30px; right: 30px;
+            font-family: monospace; color: var(--synaptic-orange);
+            font-size: 10px; letter-spacing: 0.1em;
+            animation: blink 2s infinite; text-shadow: 0 0 5px var(--synaptic-orange);
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
         @media (max-width: 1024px) {
             .detail-wrapper { flex-direction: column; overflow-y: auto; }
-            .detail-visual { height: 50vh; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
-            .detail-title { font-size: 24px; }
-            .synapse-card { width: 300px; height: 220px; }
+            .detail-visual { flex: none; height: 50vh; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .detail-info { flex: none; min-height: 50vh; padding: 10vw; }
+            #detail-title { font-size: 2rem; }
+            .work-card { width: 85vw; margin-right: 5vw; }
         }
     </style>
 </head>
@@ -161,266 +225,199 @@
 
     <canvas id="neural-canvas"></canvas>
 
-    <div class="header">
-        <div class="logo-block">
-            <div class="logo glitch" data-text="AYOUB AKKA">AYOUB AKKA</div>
-            <div class="sub-logo">ALCHIMISTE NEURAL</div>
+    <nav class="fixed top-0 w-full p-10 flex justify-between items-start">
+        <div>
+            <h1 class="syncopate text-2xl tracking-[0.5em] glitch" data-text="AKKA">AKKA</h1>
+            <p class="text-[9px] uppercase tracking-[0.8em] text-orange-500 mt-2 font-bold signal-pulse">Alchimiste Neural</p>
         </div>
-        <div class="contact-block">
-            <div class="sub-logo" style="margin-bottom: 5px;">ARCHIVE VOL.1 — 50 ŒUVRES</div>
-            <a href="tel:+213553508943" class="phone-number">+213 553 50 89 43</a>
+        <div class="text-right">
+            <p class="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-bold signal-pulse">Vol. 1 — Archive 50</p>
+            
+            <a href="tel:00213553508943" class="contact-node">
+                <span class="contact-text">+213 553 50 89 43</span>
+            </a>
+
+            <p class="text-[8px] opacity-40 mt-2 uppercase italic text-white">جاء الشتاء بحر وسماء</p>
         </div>
+    </nav>
+
+    <div id="main-stage">
+        <div class="viewport" id="loom">
+            <div class="work-card flex flex-col justify-center" style="width: 35vw;">
+                <h2 class="syncopate text-5xl leading-tight mb-6 text-white">
+                    <span class="glitch" data-text="LA">LA</span><br>
+                    <span class="text-orange-500 glitch" data-text="TRAME">TRAME</span><br>
+                    <span class="glitch" data-text="NEURALE">NEURALE</span>
+                </h2>
+                <div class="mb-4 border-l-2 border-orange-500 pl-4">
+                    <h3 class="text-xl font-bold tracking-widest text-white signal-pulse">TECHNICIEN SUPÉRIEUR</h3>
+                    <h3 class="text-xl font-bold tracking-widest text-white signal-pulse">EN ART ET INDUSTRIE</h3>
+                    <h3 class="text-xl font-bold tracking-widest text-orange-500 signal-pulse">GRAPHIQUES</h3>
+                </div>
+            </div>
+            </div>
     </div>
+    <div class="progress-bar"><div id="fill"></div></div>
 
-    <div class="synapse-gallery" id="synapse-gallery"></div>
-
-    <div class="cursor" id="cursor"></div>
-
-    <div class="detail-view" id="detail-view">
-        <button class="close-btn" id="close-btn">FERMER LE NŒUD</button>
+    <div id="detail-overlay">
+        
+        <button class="close-btn" onclick="closeDetail()">[ FERMER NŒUD ]</button>
+        
         <div class="detail-wrapper">
             <div class="detail-visual">
-                <img id="detail-image" src="" alt="">
+                <img id="detail-img" src="" alt="">
             </div>
+
             <div class="detail-info">
-                <div class="detail-meta" id="detail-meta">ID: 000 // ORIGINE: ALGERIE</div>
-                <h2 class="detail-title glitch" id="detail-title" data-text=""></h2>
-                <p class="detail-desc" id="detail-desc"></p>
-                <div class="sub-logo" style="margin-top: 50px; opacity: 0.5;">UTILISEZ LES FLÈCHES POUR NAVIGUER</div>
+                <div class="data-label">DONNÉES SYNAPTIQUES</div>
+                <h2 id="detail-title" class="syncopate glitch"></h2>
+                
+                <div class="data-label" style="margin-top: 30px;">ANALYSE CONCEPTUELLE</div>
+                <p id="detail-desc"></p>
+
+                <div class="sci-footer">
+                    <span id="detail-id">ID: 000</span>
+                    <span>STATUT: CLASSÉ</span>
+                    <span>ORIGINE: ALGERIE</span>
+                </div>
+                
+                <div class="key-hint">◄ CLAVIER ► POUR NAVIGUER</div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js"></script>
-
     <script>
-        // CONFIGURATION LENTE ET FLUIDE
-        const CONFIG = {
-            cardCount: 50, // WE SHOW ALL 50 MIXED WORKS
-            synapseDistance: 150,
-            scrollSpeed: 0.002, // Slow, heavy scroll for luxury feel
-            cardSpacing: 450
-        };
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+        const loom = document.getElementById('loom');
+        const detailOverlay = document.getElementById('detail-overlay');
 
-        // --- THE MASTER MIXED DATA (DESIGN + PHOTOGRAPHY) ---
-        // This combines your Manaret Sahel works AND your Photography works
-        const galleryData = [
-            // --- TOP TIER DESIGNS ---
-            { id: 1, type: 'DESIGN', title: 'MANARET_CHEF', desc: "La Pincée de l'Alchimiste : Transformer le banal en exquis." },
-            { id: 2, type: 'DESIGN', title: 'PERLE_TERRE', desc: "L'humble légumineuse, élevée au rang de joyau culinaire." },
-            { id: 7, type: 'DESIGN', title: 'GRAINE_PHARAON', desc: "Enterrée avec les rois pour adoucir l'au-delà." },
-            
-            // --- TOP TIER PHOTOGRAPHY ---
-            { id: 51, type: 'PHOTO', title: 'SCULPTURE_STONE', desc: "La mémoire figée dans la roche éternelle.", src: '1.PNG' },
-            { id: 52, type: 'PHOTO', title: 'HELICO_SEA', desc: "L'intervention mécanique sur l'infini bleu.", src: '2.PNG' },
-            
-            // --- MIXED WORKS ---
-            { id: 3, type: 'DESIGN', title: 'OR_LIQUIDE', desc: "Une symphonie aromatique pour réchauffer l'âme." },
-            { id: 53, type: 'PHOTO', title: 'SILHOUETTE_OR', desc: "L'ombre humaine découpée par le feu solaire.", src: '3.PNG' },
-            { id: 8, type: 'DESIGN', title: 'PROMETHEE', desc: "Capturer l'énergie du soleil dans une tige creuse." },
-            { id: 56, type: 'PHOTO', title: 'ROCHER_OMBRE', desc: "Le contraste absolu entre la terre et la lumière.", src: '6.PNG' },
-            { id: 13, type: 'DESIGN', title: 'AILES_PAPIER', desc: "Porte du Savoir : Là où l'intellect prend son envol." },
-            { id: 58, type: 'PHOTO', title: 'VILLE_NUIT', desc: "Le réseau urbain dormant sous la lune.", src: '8.PNG' },
-            { id: 15, type: 'DESIGN', title: 'PRECISION_PLI', desc: "La complexité résolue dans une simplicité absolue." },
-            { id: 21, type: 'DESIGN', title: 'MIZAN_DIVIN', desc: "La vérité mathématique derrière la beauté esthétique." },
-            { id: 62, type: 'PHOTO', title: 'CIEL_PASTEL', desc: "Quand l'atmosphère peint ses propres rêves.", src: '12.PNG' },
-            { id: 28, type: 'DESIGN', title: 'MINUIT', desc: "L'illumination savoureuse dans l'obscurité." },
-            { id: 79, type: 'PHOTO', title: 'VAGUE_ECUME', desc: "Le chaos liquide figé dans le temps.", src: '29.png' },
-            
-            // ... (I've kept the logic dynamic so we can just rely on file names 'workX.jpg' or 'X.png')
-            // To simplify for the code, we assume you renamed photos to work51.jpg etc, OR we handle logic below.
-            // FOR THIS SCRIPT: I will use a robust image loader.
+        // --- DATA ARCHIVE (50 ITEMS) ---
+        const worksData = [
+            { id: 1,  title: "MANARET_CHEF",   desc: "La Pincée de l'Alchimiste : Transformer le banal en exquis." },
+            { id: 2,  title: "PERLE_TERRE",    desc: "L'humble légumineuse, élevée au rang de joyau culinaire." },
+            { id: 3,  title: "OR_LIQUIDE",     desc: "Une symphonie aromatique pour réchauffer l'âme." },
+            { id: 4,  title: "CHALEUR_CARMIN", desc: "Passion séchée au soleil, broyée en poussière vibrante." },
+            { id: 5,  title: "NID_PHENIX",     desc: "Une écorce ancienne qui valait autrefois plus que l'or." },
+            { id: 6,  title: "ROSE_BLANCHE",   desc: "Les racines puissantes qui définissent la fondation du goût." },
+            { id: 7,  title: "GRAINE_PHARAON", desc: "Enterrée avec les rois pour adoucir l'au-delà." },
+            { id: 8,  title: "PROMETHEE",      desc: "Capturer l'énergie du soleil dans une tige creuse." },
+            { id: 9,  title: "LIGNE_HORIZON",  desc: "Curater le silence entre la mer et le ciel." },
+            { id: 10, title: "HEURE_AMBREE",   desc: "Quand la lumière perd sa dureté et embrasse la terre." },
+            { id: 11, title: "ATMOSPHERE",     desc: "Visualiser le poids de l'air lui-même." },
+            { id: 12, title: "GRADIENT_SOL",   desc: "La transition éphémère du jour vers la mémoire." },
+            { id: 13, title: "AILES_PAPIER",   desc: "Porte du Savoir : Là où l'intellect prend son envol." },
+            { id: 14, title: "IRIS_VISION",    desc: "Voir le spectre au-delà du visible." },
+            { id: 15, title: "PRECISION_PLI",  desc: "La complexité résolue dans une simplicité absolue." },
+            { id: 16, title: "MONOLITHE",      desc: "L'identité émergeant du néant." },
+            { id: 17, title: "PLAINES_PAPIER", desc: "L'ombre subtile définit la forme." },
+            { id: 18, title: "RUSH_ALPIN",     desc: "La friction de l'air froid et de l'adrénaline." },
+            { id: 19, title: "MAILLE_DOR",     desc: "La structure trouvée dans le chaos des formes organiques." },
+            { id: 20, title: "ENCRE_ABYSSE",   desc: "La profondeur de l'océan, capturée en pigment." },
+            { id: 21, title: "MIZAN_DIVIN",    desc: "La vérité mathématique derrière la beauté esthétique." },
+            { id: 22, title: "EDITORIAL",      desc: "Laisser l'espace blanc raconter l'histoire." },
+            { id: 23, title: "ARCH_DEPLIEE",   desc: "L'architecture de l'anticipation." },
+            { id: 24, title: "SOLITAIRE",      desc: "L'échelle de l'homme face à la marée infinie." },
+            { id: 25, title: "TURBULENCE",     desc: "Figer l'énergie cinétique de l'impact." },
+            { id: 26, title: "CLINIQUE",       desc: "La confiance communiquée par la précision et le calme." },
+            { id: 27, title: "GOUT_CINETIQUE", desc: "Visualiser la vélocité de la saveur." },
+            { id: 28, title: "MINUIT",         desc: "L'illumination savoureuse dans l'obscurité." },
+            { id: 29, title: "SIGNAL_ROUGE",   desc: "L'urgence primitive de l'appétit." },
+            { id: 30, title: "CIRCULAIRE",     desc: "La géométrie du partage." },
+            { id: 31, title: "DESIR_FLUIDE",   desc: "Capturer la texture de l'indulgence." },
+            { id: 32, title: "COMP_ETAGEE",    desc: "L'architecture d'une bouchée parfaite." },
+            { id: 33, title: "ELEGANCE_ROSE",  desc: "Marketer le rituel du soin de soi." },
+            { id: 34, title: "DOUCE_AUTORITE", desc: "Design éducatif avec une touche délicate." },
+            { id: 35, title: "PLI_CYAN",       desc: "L'identité rafraîchie par la clarté du bleu." },
+            { id: 36, title: "QUETE_VERTE",    desc: "Le design qui suscite les bonnes questions." },
+            { id: 37, title: "ECO_CORP",       desc: "Le fil conducteur à travers chaque point de contact." },
+            { id: 38, title: "TANGIBLE",       desc: "Amener l'identité numérique dans l'espace physique." },
+            { id: 39, title: "TACTILE",        desc: "La sensation de qualité avant le premier goût." },
+            { id: 40, title: "CONTEXTE",       desc: "Le branding qui vit dans le monde réel." },
+            { id: 41, title: "FRACTALE",       desc: "L'ordre chaotique de la croissance naturelle." },
+            { id: 42, title: "HORIZON_MIN",    desc: "Réduire le monde à la ligne et à la forme." },
+            { id: 43, title: "PORTABLE",       desc: "La marque qui voyage avec le consommateur." },
+            { id: 44, title: "JEU_DOMBRES",    desc: "Souligner la forme par l'absence de lumière." },
+            { id: 45, title: "FOCUS_HEROS",    desc: "Diriger l'œil vers le centre culinaire." },
+            { id: 46, title: "TENSION",        desc: "Le moment juste avant la révélation." },
+            { id: 47, title: "SURFACE",        desc: "Le branding enveloppant la forme." },
+            { id: 48, title: "TOILE_URBAINE",  desc: "Le design occupant la rue de la ville." },
+            { id: 49, title: "DECLARATION",    desc: "Le volume visuel dans un monde bruyant." },
+            { id: 50, title: "COFFRE_COBALT",  desc: "L'argent sauvage de l'océan, suspendu dans le temps." }
         ];
 
-        // Let's generate the full 50 list based on your previous input to ensure everything is there
-        // MIXING LOGIC: We map index to your file names.
-        // 1-50 are from the Design Folder (work1.jpg)
-        // We will inject the 29 photos (1.PNG etc) interleaved or at the end.
-        
-        let displayList = [];
-        
-        // Add specific Designs
-        for(let i=1; i<=20; i++) displayList.push({type:'DESIGN', src:`work${i}.jpg`, id:i, title:`ARCHIVE_DESIGN_${i}`, desc:"Exploration de la trame graphique et culturelle."});
-        
-        // Add specific Photos
-        for(let i=1; i<=20; i++) displayList.push({type:'PHOTO', src:`${i}.PNG`, id:i+100, title:`ARCHIVE_PHOTO_${i}`, desc:"Capture de l'instant dans la trame du réel."});
+        // INJECTION
+        worksData.forEach((work, index) => {
+            const card = document.createElement('div');
+            card.className = 'work-card';
+            card.onclick = () => openDetail(index);
+            const delay = Math.random() * 2;
+            card.innerHTML = `
+                <div class="artifact-raw"><img src="work${work.id}.jpg" loading="lazy" alt="${work.title}" onerror="this.style.display='none'"></div>
+                <div class="meta-bar">
+                    <div>
+                        <p class="text-[9px] text-orange-500 mb-1 tracking-widest uppercase font-bold signal-pulse">${work.desc.substring(0,25)}...</p>
+                        <h3 class="syncopate text-xl uppercase tracking-tighter text-white glitch" data-text="${work.title}" style="--delay:${delay}s;">${work.title}</h3>
+                    </div>
+                    <span class="text-3xl font-light opacity-10 syncopate text-white">#${work.id}</span>
+                </div>`;
+            loom.appendChild(card);
+        });
 
-        // Add remaining Designs
-        for(let i=21; i<=50; i++) displayList.push({type:'DESIGN', src:`work${i}.jpg`, id:i, title:`ARCHIVE_DESIGN_${i}`, desc:"Continuité de la recherche visuelle."});
+        // SCROLL ENGINE
+        function getScrollAmount() { return -(loom.scrollWidth - window.innerWidth); }
+        const tween = gsap.to(loom, { x: getScrollAmount, ease: "none", scrollTrigger: { trigger: "#main-stage", start: "top top", end: () => `+=${getScrollAmount() * -1}`, pin: true, scrub: 1, invalidateOnRefresh: true, onUpdate: self => document.getElementById('fill').style.width = self.progress * 100 + "%" } });
+        gsap.utils.toArray('.work-card').forEach(card => { ScrollTrigger.create({ trigger: card, containerAnimation: tween, start: "center 70%", end: "center 30%", toggleClass: "focus" }); });
 
-        // Add remaining Photos
-        for(let i=21; i<=29; i++) displayList.push({type:'PHOTO', src:`${i}.png`, id:i+100, title:`ARCHIVE_PHOTO_${i}`, desc:"Lumière et texture."});
-
-        // --- ENGINE ---
-        let state = {
-            scrollPosition: 0,
-            targetScroll: 0,
-            mouseX: 0, mouseY: 0,
-            cards: [], nodes: [],
-            detailOpen: false,
-            activeIndex: 0
-        };
-
-        const canvas = document.getElementById('neural-canvas');
-        const ctx = canvas.getContext('2d');
-        const gallery = document.getElementById('synapse-gallery');
-        const cursor = document.getElementById('cursor');
-        const detailView = document.getElementById('detail-view');
-
-        // --- NEURAL CANVAS ---
-        class Node {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
-            }
-        }
-
-        function initCanvas() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            state.nodes = Array.from({length: 80}, () => new Node());
-        }
-
-        function drawCanvas() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            // Draw connections
-            ctx.lineWidth = 0.2;
-            for(let i=0; i<state.nodes.length; i++) {
-                let nodeA = state.nodes[i];
-                nodeA.update();
-                nodeA.draw();
-                for(let j=i+1; j<state.nodes.length; j++) {
-                    let nodeB = state.nodes[j];
-                    let dist = Math.hypot(nodeA.x - nodeB.x, nodeA.y - nodeB.y);
-                    if(dist < 150) {
-                        ctx.strokeStyle = `rgba(255,255,255,${1 - dist/150})`;
-                        ctx.beginPath(); ctx.moveTo(nodeA.x, nodeA.y); ctx.lineTo(nodeB.x, nodeB.y); ctx.stroke();
-                    }
-                }
-            }
-            // Mouse Interaction
-            state.nodes.forEach(node => {
-                let dist = Math.hypot(node.x - state.mouseX, node.y - state.mouseY);
-                if(dist < 200) {
-                    ctx.strokeStyle = `rgba(0, 243, 255, ${1 - dist/200})`;
-                    ctx.beginPath(); ctx.moveTo(node.x, node.y); ctx.lineTo(state.mouseX, state.mouseY); ctx.stroke();
-                }
-            });
-            requestAnimationFrame(drawCanvas);
-        }
-
-        // --- 3D GALLERY ENGINE ---
-        function createGallery() {
-            displayList.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'synapse-card';
-                card.innerHTML = `
-                    <div class="card-content">
-                        <img class="design-image" src="${item.src}" alt="${item.title}" loading="lazy" onerror="this.style.display='none'">
-                        <div class="card-overlay">
-                            <div class="card-title">${item.title}</div>
-                        </div>
-                    </div>`;
-                
-                card.addEventListener('click', () => openDetail(index));
-                card.addEventListener('mouseenter', () => cursor.classList.add('active'));
-                card.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-                
-                gallery.appendChild(card);
-                state.cards.push(card);
-            });
-        }
-
-        function updateGallery() {
-            state.scrollPosition += (state.targetScroll - state.scrollPosition) * 0.05;
-            
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-
-            state.cards.forEach((card, i) => {
-                const normalizedPos = i * CONFIG.cardSpacing - state.scrollPosition;
-                const distFromCenter = Math.abs(normalizedPos);
-                
-                // 3D WAVE MATH
-                const x = centerX + normalizedPos - 200; // Center offset
-                const y = centerY + Math.sin(normalizedPos * 0.002) * 100 - 160;
-                const z = Math.max(-500, 1 - distFromCenter * 0.001); // Depth
-                const scale = Math.max(0.5, 1 - distFromCenter / 2000);
-                const opacity = Math.max(0, 1 - distFromCenter / 1500);
-                const rotateY = normalizedPos * 0.05;
-
-                card.style.transform = `translate3d(${x}px, ${y}px, ${z}px) scale(${scale}) rotateY(${rotateY}deg)`;
-                card.style.opacity = opacity;
-                card.style.zIndex = Math.round(1000 - distFromCenter);
-            });
-
-            if(!state.detailOpen) requestAnimationFrame(updateGallery);
-        }
-
-        // --- DETAIL VIEW ---
+        // NAVIGATION ENGINE
+        let currentIndex = -1;
         function openDetail(index) {
-            state.detailOpen = true;
-            state.activeIndex = index;
-            const item = displayList[index];
+            currentIndex = index;
+            const work = worksData[currentIndex];
+            
+            document.getElementById('detail-img').src = `work${work.id}.jpg`;
+            document.getElementById('detail-title').innerText = work.title;
+            document.getElementById('detail-title').setAttribute('data-text', work.title);
+            document.getElementById('detail-desc').innerText = work.desc;
+            document.getElementById('detail-id').innerText = `ID: ${work.id.toString().padStart(3, '0')}`;
 
-            document.getElementById('detail-image').src = item.src;
-            document.getElementById('detail-title').innerText = item.title;
-            document.getElementById('detail-title').setAttribute('data-text', item.title);
-            document.getElementById('detail-desc').innerText = item.desc;
-            document.getElementById('detail-meta').innerText = `NODE ID: ${item.id} // TYPE: ${item.type}`;
-
-            detailView.classList.add('active');
-            gallery.style.opacity = 0;
+            detailOverlay.style.display = 'block';
+            gsap.to(detailOverlay, { opacity: 1, duration: 0.5 });
+            
+            gsap.fromTo("#detail-img", { scale: 1.1, opacity: 0 }, { scale: 0.95, opacity: 1, duration: 1, ease: "power2.out" });
+            gsap.fromTo(".detail-info", { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: "power2.out" });
         }
 
         function closeDetail() {
-            state.detailOpen = false;
-            detailView.classList.remove('active');
-            gallery.style.opacity = 1;
-            updateGallery(); // Restart loop
+            gsap.to(detailOverlay, { opacity: 0, duration: 0.3, onComplete: () => detailOverlay.style.display = 'none' });
         }
 
-        // --- EVENTS ---
-        window.addEventListener('wheel', (e) => {
-            state.targetScroll += e.deltaY;
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            state.mouseX = e.clientX; state.mouseY = e.clientY;
-            cursor.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
-        });
-
-        document.getElementById('close-btn').addEventListener('click', closeDetail);
-
         document.addEventListener('keydown', (e) => {
-            if(state.detailOpen) {
-                if(e.key === 'ArrowRight') openDetail((state.activeIndex + 1) % displayList.length);
-                if(e.key === 'ArrowLeft') openDetail((state.activeIndex - 1 + displayList.length) % displayList.length);
-                if(e.key === 'Escape') closeDetail();
-            } else {
-                if(e.key === 'ArrowRight') state.targetScroll += 500;
-                if(e.key === 'ArrowLeft') state.targetScroll -= 500;
+            if (detailOverlay.style.display === 'block') {
+                if (e.key === "ArrowRight" && currentIndex < worksData.length - 1) openDetail(currentIndex + 1);
+                if (e.key === "ArrowLeft" && currentIndex > 0) openDetail(currentIndex - 1);
+                if (e.key === "Escape") closeDetail();
             }
         });
 
-        // --- INIT ---
-        initCanvas();
-        drawCanvas();
-        createGallery();
-        updateGallery();
-        window.addEventListener('resize', initCanvas);
-
+        // NEURAL CANVAS ANIMATION
+        const canvas = document.getElementById('neural-canvas'), ctx = canvas.getContext('2d');
+        let dots = [], mouse = {x:-1000, y:-1000};
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initDots(); };
+        window.onmousemove = e => { mouse.x = e.clientX; mouse.y = e.clientY; };
+        function initDots() { dots = Array.from({length: 100}, () => ({x:Math.random()*canvas.width, y:Math.random()*canvas.height, vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5, size:Math.random()*1.5+.5, oSize:Math.random()*1.5+.5})); }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            dots.forEach(d => {
+                d.x+=d.vx; d.y+=d.vy;
+                if(d.x<0||d.x>canvas.width) d.vx*=-1; if(d.y<0||d.y>canvas.height) d.vy*=-1;
+                const dist = Math.hypot(d.x-mouse.x, d.y-mouse.y);
+                d.size = dist<250 ? d.oSize*(1+(1-dist/250)*3) : d.oSize;
+                ctx.fillStyle = `rgba(255,255,255,${dist<250?.9:.3})`; ctx.beginPath(); ctx.arc(d.x,d.y,d.size,0,Math.PI*2); ctx.fill();
+                if(dist<220) { ctx.strokeStyle=`rgba(255,107,0,${1-dist/220})`; ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke(); }
+            });
+            requestAnimationFrame(animate);
+        }
+        window.onresize(); animate();
     </script>
 </body>
 </html>
