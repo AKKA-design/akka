@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKKA | LA TRAME NEURALE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Space+Mono&family=Syncopate:wght@700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-royale: #4169E1;
+            --blue-dark: #020b1e; /* Ton Noir Obsidian Profond */
+            --blue-light: #6b8dd6;
+            --white: #FAFAFA;
+            --accent: #ffaa00; /* Ton Orange Synaptique */
+            --cyan: #00f3ff;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #0a1936 0%, #000000 100%);
+            color: var(--white);
+            font-family: 'Space Mono', monospace;
+            overflow: hidden;
+            cursor: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- GLITCH TEXT EFFECT --- */
+        .glitch { position: relative; display: inline-block; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
+        }
+        .glitch::before {
+            color: var(--accent); z-index: -1;
+            animation: glitch-1 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+        }
+        .glitch::after {
+            color: var(--cyan); z-index: -2;
+            animation: glitch-2 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+        }
+        @keyframes glitch-1 { 0% { transform: translate(0) } 20% { transform: translate(-2px, 2px) } 40% { transform: translate(-2px, -2px) } 60% { transform: translate(2px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: translate(0) } }
+        @keyframes glitch-2 { 0% { transform: translate(0) } 20% { transform: translate(2px, -2px) } 40% { transform: translate(2px, 2px) } 60% { transform: translate(-2px, -2px) } 80% { transform: translate(-2px, 2px) } 100% { transform: translate(0) } }
+
+        /* --- UI ELEMENTS --- */
+        #neural-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 40px 50px;
+            display: flex; justify-content: space-between; align-items: start; z-index: 100;
+            pointer-events: none;
+        }
+
+        .logo-block { pointer-events: auto; }
+        .logo { font-family: 'Syncopate', sans-serif; font-size: 24px; letter-spacing: 5px; text-transform: uppercase; font-weight: 700; color: #fff; }
+        .sub-logo { font-size: 10px; color: var(--accent); letter-spacing: 3px; margin-top: 5px; text-transform: uppercase; }
+
+        .contact-block { text-align: right; pointer-events: auto; }
+        .phone-number { 
+            font-family: 'Syncopate', sans-serif; font-size: 18px; color: var(--cyan); 
+            border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; 
+            background: rgba(0,0,0,0.3); transition: all 0.3s ease; text-decoration: none; display: inline-block;
+        }
+        .phone-number:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px var(--cyan); }
+
+        /* --- 3D GALLERY --- */
+        .synapse-gallery {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
+            transform-style: preserve-3d;
+        }
+
+        .synapse-card {
+            position: absolute; width: 400px; height: 320px; /* Adapted for mixed format */
+            transform-style: preserve-3d; cursor: pointer;
+            transition: transform 0.1s linear; /* Smoother for heavy scroll */
+        }
+
+        .card-content {
+            width: 100%; height: 100%; position: relative; border-radius: 4px;
+            overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); 
+            background: #000; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .design-image {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .synapse-card:hover .design-image { transform: scale(1.1); }
+
+        .card-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px;
+            background: linear-gradient(to top, #000, transparent);
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .synapse-card:hover .card-overlay { opacity: 1; }
+        .card-title { font-family: 'Syncopate', sans-serif; font-size: 12px; color: var(--accent); }
+
+        /* --- CURSOR --- */
+        .cursor {
+            position: fixed; width: 40px; height: 40px; 
+            border: 1px solid var(--white); border-radius: 50%; 
+            pointer-events: none; z-index: 2000;
+            transition: transform 0.1s ease; mix-blend-mode: exclusion;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cursor::after { content: ''; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+        .cursor.active { transform: scale(2); border-color: var(--accent); }
+
+        /* --- DETAIL VIEW --- */
+        .detail-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(2, 11, 30, 0.95); z-index: 2000; 
+            display: flex; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+            backdrop-filter: blur(10px);
+        }
+        .detail-view.active { opacity: 1; pointer-events: auto; }
+
+        .detail-wrapper {
+            display: flex; width: 100%; height: 100%;
+        }
+
+        .detail-visual {
+            flex: 6; height: 100%; padding: 50px; display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .detail-visual img { max-width: 100%; max-height: 90vh; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+
+        .detail-info {
+            flex: 4; padding: 60px; display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .detail-meta { font-size: 10px; letter-spacing: 4px; color: var(--cyan); margin-bottom: 20px; }
+        .detail-title { 
+            font-family: 'Syncopate', sans-serif; font-size: 40px; line-height: 1.1; 
+            margin-bottom: 30px; text-transform: uppercase; color: #fff;
+        }
+        .detail-desc { 
+            font-family: 'Playfair Display', serif; font-size: 20px; line-height: 1.6; 
+            color: #ddd; border-left: 2px solid var(--accent); padding-left: 20px; 
+        }
+        
+        .close-btn {
+            position: absolute; top: 40px; right: 40px; font-family: 'Syncopate', sans-serif;
+            color: var(--accent); cursor: pointer; font-size: 12px; letter-spacing: 2px;
+            border: 1px solid var(--accent); padding: 10px 20px; transition: all 0.3s;
+        }
+        .close-btn:hover { background: var(--accent); color: #000; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 1024px) {
+            .detail-wrapper { flex-direction: column; overflow-y: auto; }
+            .detail-visual { height: 50vh; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .detail-title { font-size: 24px; }
+            .synapse-card { width: 300px; height: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="neural-canvas"></canvas>
+
+    <div class="header">
+        <div class="logo-block">
+            <div class="logo glitch" data-text="AYOUB AKKA">AYOUB AKKA</div>
+            <div class="sub-logo">ALCHIMISTE NEURAL</div>
+        </div>
+        <div class="contact-block">
+            <div class="sub-logo" style="margin-bottom: 5px;">ARCHIVE VOL.1 — 50 ŒUVRES</div>
+            <a href="tel:+213553508943" class="phone-number">+213 553 50 89 43</a>
+        </div>
+    </div>
+
+    <div class="synapse-gallery" id="synapse-gallery"></div>
+
+    <div class="cursor" id="cursor"></div>
+
+    <div class="detail-view" id="detail-view">
+        <button class="close-btn" id="close-btn">FERMER LE NŒUD</button>
+        <div class="detail-wrapper">
+            <div class="detail-visual">
+                <img id="detail-image" src="" alt="">
+            </div>
+            <div class="detail-info">
+                <div class="detail-meta" id="detail-meta">ID: 000 // ORIGINE: ALGERIE</div>
+                <h2 class="detail-title glitch" id="detail-title" data-text=""></h2>
+                <p class="detail-desc" id="detail-desc"></p>
+                <div class="sub-logo" style="margin-top: 50px; opacity: 0.5;">UTILISEZ LES FLÈCHES POUR NAVIGUER</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js"></script>
+
+    <script>
+        // CONFIGURATION LENTE ET FLUIDE
+        const CONFIG = {
+            cardCount: 50, // WE SHOW ALL 50 MIXED WORKS
+            synapseDistance: 150,
+            scrollSpeed: 0.002, // Slow, heavy scroll for luxury feel
+            cardSpacing: 450
+        };
+
+        // --- THE MASTER MIXED DATA (DESIGN + PHOTOGRAPHY) ---
+        // This combines your Manaret Sahel works AND your Photography works
+        const galleryData = [
+            // --- TOP TIER DESIGNS ---
+            { id: 1, type: 'DESIGN', title: 'MANARET_CHEF', desc: "La Pincée de l'Alchimiste : Transformer le banal en exquis." },
+            { id: 2, type: 'DESIGN', title: 'PERLE_TERRE', desc: "L'humble légumineuse, élevée au rang de joyau culinaire." },
+            { id: 7, type: 'DESIGN', title: 'GRAINE_PHARAON', desc: "Enterrée avec les rois pour adoucir l'au-delà." },
+            
+            // --- TOP TIER PHOTOGRAPHY ---
+            { id: 51, type: 'PHOTO', title: 'SCULPTURE_STONE', desc: "La mémoire figée dans la roche éternelle.", src: '1.PNG' },
+            { id: 52, type: 'PHOTO', title: 'HELICO_SEA', desc: "L'intervention mécanique sur l'infini bleu.", src: '2.PNG' },
+            
+            // --- MIXED WORKS ---
+            { id: 3, type: 'DESIGN', title: 'OR_LIQUIDE', desc: "Une symphonie aromatique pour réchauffer l'âme." },
+            { id: 53, type: 'PHOTO', title: 'SILHOUETTE_OR', desc: "L'ombre humaine découpée par le feu solaire.", src: '3.PNG' },
+            { id: 8, type: 'DESIGN', title: 'PROMETHEE', desc: "Capturer l'énergie du soleil dans une tige creuse." },
+            { id: 56, type: 'PHOTO', title: 'ROCHER_OMBRE', desc: "Le contraste absolu entre la terre et la lumière.", src: '6.PNG' },
+            { id: 13, type: 'DESIGN', title: 'AILES_PAPIER', desc: "Porte du Savoir : Là où l'intellect prend son envol." },
+            { id: 58, type: 'PHOTO', title: 'VILLE_NUIT', desc: "Le réseau urbain dormant sous la lune.", src: '8.PNG' },
+            { id: 15, type: 'DESIGN', title: 'PRECISION_PLI', desc: "La complexité résolue dans une simplicité absolue." },
+            { id: 21, type: 'DESIGN', title: 'MIZAN_DIVIN', desc: "La vérité mathématique derrière la beauté esthétique." },
+            { id: 62, type: 'PHOTO', title: 'CIEL_PASTEL', desc: "Quand l'atmosphère peint ses propres rêves.", src: '12.PNG' },
+            { id: 28, type: 'DESIGN', title: 'MINUIT', desc: "L'illumination savoureuse dans l'obscurité." },
+            { id: 79, type: 'PHOTO', title: 'VAGUE_ECUME', desc: "Le chaos liquide figé dans le temps.", src: '29.png' },
+            
+            // ... (I've kept the logic dynamic so we can just rely on file names 'workX.jpg' or 'X.png')
+            // To simplify for the code, we assume you renamed photos to work51.jpg etc, OR we handle logic below.
+            // FOR THIS SCRIPT: I will use a robust image loader.
+        ];
+
+        // Let's generate the full 50 list based on your previous input to ensure everything is there
+        // MIXING LOGIC: We map index to your file names.
+        // 1-50 are from the Design Folder (work1.jpg)
+        // We will inject the 29 photos (1.PNG etc) interleaved or at the end.
+        
+        let displayList = [];
+        
+        // Add specific Designs
+        for(let i=1; i<=20; i++) displayList.push({type:'DESIGN', src:`work${i}.jpg`, id:i, title:`ARCHIVE_DESIGN_${i}`, desc:"Exploration de la trame graphique et culturelle."});
+        
+        // Add specific Photos
+        for(let i=1; i<=20; i++) displayList.push({type:'PHOTO', src:`${i}.PNG`, id:i+100, title:`ARCHIVE_PHOTO_${i}`, desc:"Capture de l'instant dans la trame du réel."});
+
+        // Add remaining Designs
+        for(let i=21; i<=50; i++) displayList.push({type:'DESIGN', src:`work${i}.jpg`, id:i, title:`ARCHIVE_DESIGN_${i}`, desc:"Continuité de la recherche visuelle."});
+
+        // Add remaining Photos
+        for(let i=21; i<=29; i++) displayList.push({type:'PHOTO', src:`${i}.png`, id:i+100, title:`ARCHIVE_PHOTO_${i}`, desc:"Lumière et texture."});
+
+        // --- ENGINE ---
+        let state = {
+            scrollPosition: 0,
+            targetScroll: 0,
+            mouseX: 0, mouseY: 0,
+            cards: [], nodes: [],
+            detailOpen: false,
+            activeIndex: 0
+        };
+
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        const gallery = document.getElementById('synapse-gallery');
+        const cursor = document.getElementById('cursor');
+        const detailView = document.getElementById('detail-view');
+
+        // --- NEURAL CANVAS ---
+        class Node {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function initCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            state.nodes = Array.from({length: 80}, () => new Node());
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            // Draw connections
+            ctx.lineWidth = 0.2;
+            for(let i=0; i<state.nodes.length; i++) {
+                let nodeA = state.nodes[i];
+                nodeA.update();
+                nodeA.draw();
+                for(let j=i+1; j<state.nodes.length; j++) {
+                    let nodeB = state.nodes[j];
+                    let dist = Math.hypot(nodeA.x - nodeB.x, nodeA.y - nodeB.y);
+                    if(dist < 150) {
+                        ctx.strokeStyle = `rgba(255,255,255,${1 - dist/150})`;
+                        ctx.beginPath(); ctx.moveTo(nodeA.x, nodeA.y); ctx.lineTo(nodeB.x, nodeB.y); ctx.stroke();
+                    }
+                }
+            }
+            // Mouse Interaction
+            state.nodes.forEach(node => {
+                let dist = Math.hypot(node.x - state.mouseX, node.y - state.mouseY);
+                if(dist < 200) {
+                    ctx.strokeStyle = `rgba(0, 243, 255, ${1 - dist/200})`;
+                    ctx.beginPath(); ctx.moveTo(node.x, node.y); ctx.lineTo(state.mouseX, state.mouseY); ctx.stroke();
+                }
+            });
+            requestAnimationFrame(drawCanvas);
+        }
+
+        // --- 3D GALLERY ENGINE ---
+        function createGallery() {
+            displayList.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'synapse-card';
+                card.innerHTML = `
+                    <div class="card-content">
+                        <img class="design-image" src="${item.src}" alt="${item.title}" loading="lazy" onerror="this.style.display='none'">
+                        <div class="card-overlay">
+                            <div class="card-title">${item.title}</div>
+                        </div>
+                    </div>`;
+                
+                card.addEventListener('click', () => openDetail(index));
+                card.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                card.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                
+                gallery.appendChild(card);
+                state.cards.push(card);
+            });
+        }
+
+        function updateGallery() {
+            state.scrollPosition += (state.targetScroll - state.scrollPosition) * 0.05;
+            
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            state.cards.forEach((card, i) => {
+                const normalizedPos = i * CONFIG.cardSpacing - state.scrollPosition;
+                const distFromCenter = Math.abs(normalizedPos);
+                
+                // 3D WAVE MATH
+                const x = centerX + normalizedPos - 200; // Center offset
+                const y = centerY + Math.sin(normalizedPos * 0.002) * 100 - 160;
+                const z = Math.max(-500, 1 - distFromCenter * 0.001); // Depth
+                const scale = Math.max(0.5, 1 - distFromCenter / 2000);
+                const opacity = Math.max(0, 1 - distFromCenter / 1500);
+                const rotateY = normalizedPos * 0.05;
+
+                card.style.transform = `translate3d(${x}px, ${y}px, ${z}px) scale(${scale}) rotateY(${rotateY}deg)`;
+                card.style.opacity = opacity;
+                card.style.zIndex = Math.round(1000 - distFromCenter);
+            });
+
+            if(!state.detailOpen) requestAnimationFrame(updateGallery);
+        }
+
+        // --- DETAIL VIEW ---
+        function openDetail(index) {
+            state.detailOpen = true;
+            state.activeIndex = index;
+            const item = displayList[index];
+
+            document.getElementById('detail-image').src = item.src;
+            document.getElementById('detail-title').innerText = item.title;
+            document.getElementById('detail-title').setAttribute('data-text', item.title);
+            document.getElementById('detail-desc').innerText = item.desc;
+            document.getElementById('detail-meta').innerText = `NODE ID: ${item.id} // TYPE: ${item.type}`;
+
+            detailView.classList.add('active');
+            gallery.style.opacity = 0;
+        }
+
+        function closeDetail() {
+            state.detailOpen = false;
+            detailView.classList.remove('active');
+            gallery.style.opacity = 1;
+            updateGallery(); // Restart loop
+        }
+
+        // --- EVENTS ---
+        window.addEventListener('wheel', (e) => {
+            state.targetScroll += e.deltaY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            state.mouseX = e.clientX; state.mouseY = e.clientY;
+            cursor.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
+        });
+
+        document.getElementById('close-btn').addEventListener('click', closeDetail);
+
+        document.addEventListener('keydown', (e) => {
+            if(state.detailOpen) {
+                if(e.key === 'ArrowRight') openDetail((state.activeIndex + 1) % displayList.length);
+                if(e.key === 'ArrowLeft') openDetail((state.activeIndex - 1 + displayList.length) % displayList.length);
+                if(e.key === 'Escape') closeDetail();
+            } else {
+                if(e.key === 'ArrowRight') state.targetScroll += 500;
+                if(e.key === 'ArrowLeft') state.targetScroll -= 500;
+            }
+        });
+
+        // --- INIT ---
+        initCanvas();
+        drawCanvas();
+        createGallery();
+        updateGallery();
+        window.addEventListener('resize', initCanvas);
+
+    </script>
+</body>
+</html>
