@@ -108,10 +108,10 @@
         .syncopate { font-family: 'Syncopate', sans-serif; font-weight: 700; }
         nav { z-index: 100; mix-blend-difference: exclusion; }
         
-        .progress-bar { position: fixed; bottom: 30px; left: 10vw; width: 60vw; height: 2px; background: rgba(255,255,255,0.1); z-index: 100; }
+        .progress-bar { position: fixed; bottom: 30px; left: 10vw; width: 80vw; height: 2px; background: rgba(255,255,255,0.1); z-index: 100; }
         #fill { height: 100%; width: 0%; background: var(--synaptic-orange); box-shadow: 0 0 20px var(--synaptic-orange); }
 
-        /* --- 4. CONTACT NODE (UNFORGETTABLE UX) --- */
+        /* --- 4. CONTACT NODE (SINGLE LINE) --- */
         .contact-node {
             position: relative; display: inline-block;
             margin-top: 0.8rem; padding: 8px 16px;
@@ -119,6 +119,7 @@
             background: rgba(255,255,255,0.02);
             transition: all 0.4s ease;
             overflow: hidden;
+            white-space: nowrap; /* Forces single line */
         }
         .contact-node:hover {
             border-color: var(--synaptic-orange);
@@ -218,6 +219,7 @@
             .detail-info { flex: none; min-height: 50vh; padding: 10vw; }
             #detail-title { font-size: 2rem; }
             .work-card { width: 85vw; margin-right: 5vw; }
+            .viewport { padding-left: 5vw; padding-right: 5vw; }
         }
     </style>
 </head>
@@ -233,9 +235,11 @@
         <div class="text-right">
             <p class="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-bold signal-pulse">Vol. 1 — Archive 50</p>
             
-            <a href="tel:00213553508943" class="contact-node">
-                <span class="contact-text">+213 553 50 89 43</span>
-            </a>
+            <div style="white-space: nowrap;">
+                <a href="tel:00213553508943" class="contact-node">
+                    <span class="contact-text">+213 553 50 89 43</span>
+                </a>
+            </div>
 
             <p class="text-[8px] opacity-40 mt-2 uppercase italic text-white">جاء الشتاء بحر وسماء</p>
         </div>
@@ -243,7 +247,7 @@
 
     <div id="main-stage">
         <div class="viewport" id="loom">
-            <div class="work-card flex flex-col justify-center" style="width: 35vw;">
+            <div class="work-card flex flex-col justify-center" style="width: 25vw; flex-shrink: 0; margin-right: 5vw;">
                 <h2 class="syncopate text-5xl leading-tight mb-6 text-white">
                     <span class="glitch" data-text="LA">LA</span><br>
                     <span class="text-orange-500 glitch" data-text="TRAME">TRAME</span><br>
@@ -260,27 +264,21 @@
     <div class="progress-bar"><div id="fill"></div></div>
 
     <div id="detail-overlay">
-        
         <button class="close-btn" onclick="closeDetail()">[ FERMER NŒUD ]</button>
-        
         <div class="detail-wrapper">
             <div class="detail-visual">
                 <img id="detail-img" src="" alt="">
             </div>
-
             <div class="detail-info">
                 <div class="data-label">DONNÉES SYNAPTIQUES</div>
                 <h2 id="detail-title" class="syncopate glitch"></h2>
-                
                 <div class="data-label" style="margin-top: 30px;">ANALYSE CONCEPTUELLE</div>
                 <p id="detail-desc"></p>
-
                 <div class="sci-footer">
                     <span id="detail-id">ID: 000</span>
                     <span>STATUT: CLASSÉ</span>
                     <span>ORIGINE: ALGERIE</span>
                 </div>
-                
                 <div class="key-hint">◄ CLAVIER ► POUR NAVIGUER</div>
             </div>
         </div>
@@ -292,71 +290,23 @@
         const detailOverlay = document.getElementById('detail-overlay');
 
         // --- DATA ARCHIVE (50 ITEMS) ---
-        const worksData = [
-            { id: 1,  title: "MANARET_CHEF",   desc: "La Pincée de l'Alchimiste : Transformer le banal en exquis." },
-            { id: 2,  title: "PERLE_TERRE",    desc: "L'humble légumineuse, élevée au rang de joyau culinaire." },
-            { id: 3,  title: "OR_LIQUIDE",     desc: "Une symphonie aromatique pour réchauffer l'âme." },
-            { id: 4,  title: "CHALEUR_CARMIN", desc: "Passion séchée au soleil, broyée en poussière vibrante." },
-            { id: 5,  title: "NID_PHENIX",     desc: "Une écorce ancienne qui valait autrefois plus que l'or." },
-            { id: 6,  title: "ROSE_BLANCHE",   desc: "Les racines puissantes qui définissent la fondation du goût." },
-            { id: 7,  title: "GRAINE_PHARAON", desc: "Enterrée avec les rois pour adoucir l'au-delà." },
-            { id: 8,  title: "PROMETHEE",      desc: "Capturer l'énergie du soleil dans une tige creuse." },
-            { id: 9,  title: "LIGNE_HORIZON",  desc: "Curater le silence entre la mer et le ciel." },
-            { id: 10, title: "HEURE_AMBREE",   desc: "Quand la lumière perd sa dureté et embrasse la terre." },
-            { id: 11, title: "ATMOSPHERE",     desc: "Visualiser le poids de l'air lui-même." },
-            { id: 12, title: "GRADIENT_SOL",   desc: "La transition éphémère du jour vers la mémoire." },
-            { id: 13, title: "AILES_PAPIER",   desc: "Porte du Savoir : Là où l'intellect prend son envol." },
-            { id: 14, title: "IRIS_VISION",    desc: "Voir le spectre au-delà du visible." },
-            { id: 15, title: "PRECISION_PLI",  desc: "La complexité résolue dans une simplicité absolue." },
-            { id: 16, title: "MONOLITHE",      desc: "L'identité émergeant du néant." },
-            { id: 17, title: "PLAINES_PAPIER", desc: "L'ombre subtile définit la forme." },
-            { id: 18, title: "RUSH_ALPIN",     desc: "La friction de l'air froid et de l'adrénaline." },
-            { id: 19, title: "MAILLE_DOR",     desc: "La structure trouvée dans le chaos des formes organiques." },
-            { id: 20, title: "ENCRE_ABYSSE",   desc: "La profondeur de l'océan, capturée en pigment." },
-            { id: 21, title: "MIZAN_DIVIN",    desc: "La vérité mathématique derrière la beauté esthétique." },
-            { id: 22, title: "EDITORIAL",      desc: "Laisser l'espace blanc raconter l'histoire." },
-            { id: 23, title: "ARCH_DEPLIEE",   desc: "L'architecture de l'anticipation." },
-            { id: 24, title: "SOLITAIRE",      desc: "L'échelle de l'homme face à la marée infinie." },
-            { id: 25, title: "TURBULENCE",     desc: "Figer l'énergie cinétique de l'impact." },
-            { id: 26, title: "CLINIQUE",       desc: "La confiance communiquée par la précision et le calme." },
-            { id: 27, title: "GOUT_CINETIQUE", desc: "Visualiser la vélocité de la saveur." },
-            { id: 28, title: "MINUIT",         desc: "L'illumination savoureuse dans l'obscurité." },
-            { id: 29, title: "SIGNAL_ROUGE",   desc: "L'urgence primitive de l'appétit." },
-            { id: 30, title: "CIRCULAIRE",     desc: "La géométrie du partage." },
-            { id: 31, title: "DESIR_FLUIDE",   desc: "Capturer la texture de l'indulgence." },
-            { id: 32, title: "COMP_ETAGEE",    desc: "L'architecture d'une bouchée parfaite." },
-            { id: 33, title: "ELEGANCE_ROSE",  desc: "Marketer le rituel du soin de soi." },
-            { id: 34, title: "DOUCE_AUTORITE", desc: "Design éducatif avec une touche délicate." },
-            { id: 35, title: "PLI_CYAN",       desc: "L'identité rafraîchie par la clarté du bleu." },
-            { id: 36, title: "QUETE_VERTE",    desc: "Le design qui suscite les bonnes questions." },
-            { id: 37, title: "ECO_CORP",       desc: "Le fil conducteur à travers chaque point de contact." },
-            { id: 38, title: "TANGIBLE",       desc: "Amener l'identité numérique dans l'espace physique." },
-            { id: 39, title: "TACTILE",        desc: "La sensation de qualité avant le premier goût." },
-            { id: 40, title: "CONTEXTE",       desc: "Le branding qui vit dans le monde réel." },
-            { id: 41, title: "FRACTALE",       desc: "L'ordre chaotique de la croissance naturelle." },
-            { id: 42, title: "HORIZON_MIN",    desc: "Réduire le monde à la ligne et à la forme." },
-            { id: 43, title: "PORTABLE",       desc: "La marque qui voyage avec le consommateur." },
-            { id: 44, title: "JEU_DOMBRES",    desc: "Souligner la forme par l'absence de lumière." },
-            { id: 45, title: "FOCUS_HEROS",    desc: "Diriger l'œil vers le centre culinaire." },
-            { id: 46, title: "TENSION",        desc: "Le moment juste avant la révélation." },
-            { id: 47, title: "SURFACE",        desc: "Le branding enveloppant la forme." },
-            { id: 48, title: "TOILE_URBAINE",  desc: "Le design occupant la rue de la ville." },
-            { id: 49, title: "DECLARATION",    desc: "Le volume visuel dans un monde bruyant." },
-            { id: 50, title: "COFFRE_COBALT",  desc: "L'argent sauvage de l'océan, suspendu dans le temps." }
-        ];
+        const worksData = Array.from({length: 50}, (_, i) => ({
+            id: i + 1,
+            title: `ARCHIVE_${(i+1).toString().padStart(3,'0')}`,
+            desc: "Analyse conceptuelle de la structure et de la lumière. Baya Jury submission node."
+        }));
 
         // INJECTION
         worksData.forEach((work, index) => {
             const card = document.createElement('div');
             card.className = 'work-card';
             card.onclick = () => openDetail(index);
-            const delay = Math.random() * 2;
             card.innerHTML = `
-                <div class="artifact-raw"><img src="work${work.id}.jpg" loading="lazy" alt="${work.title}" onerror="this.style.display='none'"></div>
+                <div class="artifact-raw"><img src="work${work.id}.jpg" loading="lazy" alt="${work.title}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='"></div>
                 <div class="meta-bar">
                     <div>
                         <p class="text-[9px] text-orange-500 mb-1 tracking-widest uppercase font-bold signal-pulse">${work.desc.substring(0,25)}...</p>
-                        <h3 class="syncopate text-xl uppercase tracking-tighter text-white glitch" data-text="${work.title}" style="--delay:${delay}s;">${work.title}</h3>
+                        <h3 class="syncopate text-xl uppercase tracking-tighter text-white glitch" data-text="${work.title}">${work.title}</h3>
                     </div>
                     <span class="text-3xl font-light opacity-10 syncopate text-white">#${work.id}</span>
                 </div>`;
@@ -366,38 +316,25 @@
         // SCROLL ENGINE
         function getScrollAmount() { return -(loom.scrollWidth - window.innerWidth); }
         const tween = gsap.to(loom, { x: getScrollAmount, ease: "none", scrollTrigger: { trigger: "#main-stage", start: "top top", end: () => `+=${getScrollAmount() * -1}`, pin: true, scrub: 1, invalidateOnRefresh: true, onUpdate: self => document.getElementById('fill').style.width = self.progress * 100 + "%" } });
-        gsap.utils.toArray('.work-card').forEach(card => { ScrollTrigger.create({ trigger: card, containerAnimation: tween, start: "center 70%", end: "center 30%", toggleClass: "focus" }); });
-
-        // NAVIGATION ENGINE
+        
+        // Navigation / Detail
         let currentIndex = -1;
         function openDetail(index) {
             currentIndex = index;
             const work = worksData[currentIndex];
-            
             document.getElementById('detail-img').src = `work${work.id}.jpg`;
             document.getElementById('detail-title').innerText = work.title;
             document.getElementById('detail-title').setAttribute('data-text', work.title);
             document.getElementById('detail-desc').innerText = work.desc;
             document.getElementById('detail-id').innerText = `ID: ${work.id.toString().padStart(3, '0')}`;
-
             detailOverlay.style.display = 'block';
             gsap.to(detailOverlay, { opacity: 1, duration: 0.5 });
-            
             gsap.fromTo("#detail-img", { scale: 1.1, opacity: 0 }, { scale: 0.95, opacity: 1, duration: 1, ease: "power2.out" });
-            gsap.fromTo(".detail-info", { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: "power2.out" });
         }
 
         function closeDetail() {
             gsap.to(detailOverlay, { opacity: 0, duration: 0.3, onComplete: () => detailOverlay.style.display = 'none' });
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (detailOverlay.style.display === 'block') {
-                if (e.key === "ArrowRight" && currentIndex < worksData.length - 1) openDetail(currentIndex + 1);
-                if (e.key === "ArrowLeft" && currentIndex > 0) openDetail(currentIndex - 1);
-                if (e.key === "Escape") closeDetail();
-            }
-        });
 
         // NEURAL CANVAS ANIMATION
         const canvas = document.getElementById('neural-canvas'), ctx = canvas.getContext('2d');
