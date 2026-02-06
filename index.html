@@ -111,7 +111,7 @@
         .progress-bar { position: fixed; bottom: 30px; left: 10vw; width: 80vw; height: 2px; background: rgba(255,255,255,0.1); z-index: 100; }
         #fill { height: 100%; width: 0%; background: var(--synaptic-orange); box-shadow: 0 0 20px var(--synaptic-orange); }
 
-        /* --- 4. CONTACT NODE (SINGLE LINE) --- */
+        /* --- 4. CONTACT NODE --- */
         .contact-node {
             position: relative; display: inline-block;
             margin-top: 0.8rem; padding: 8px 16px;
@@ -119,7 +119,7 @@
             background: rgba(255,255,255,0.02);
             transition: all 0.4s ease;
             overflow: hidden;
-            white-space: nowrap; /* Forces single line */
+            white-space: nowrap;
         }
         .contact-node:hover {
             border-color: var(--synaptic-orange);
@@ -139,7 +139,6 @@
             transition: color 0.3s;
         }
         .contact-node:hover .contact-text { color: var(--synaptic-orange); }
-
 
         /* --- 5. SLIDE OVERLAY --- */
         #detail-overlay {
@@ -213,13 +212,18 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
+        /* --- MOBILE FIXES --- */
         @media (max-width: 1024px) {
             .detail-wrapper { flex-direction: column; overflow-y: auto; }
             .detail-visual { flex: none; height: 50vh; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
             .detail-info { flex: none; min-height: 50vh; padding: 10vw; }
             #detail-title { font-size: 2rem; }
-            .work-card { width: 85vw; margin-right: 5vw; }
-            .viewport { padding-left: 5vw; padding-right: 5vw; }
+            
+            .work-card { width: 85vw !important; margin-right: 15vw !important; }
+            .viewport { padding-left: 5vw !important; padding-right: 5vw !important; }
+            
+            .text-5xl { font-size: 2.5rem !important; }
+            .text-xl { font-size: 1rem !important; }
         }
     </style>
 </head>
@@ -313,9 +317,26 @@
             loom.appendChild(card);
         });
 
-        // SCROLL ENGINE
+        // SCROLL ENGINE WITH IMMERSIVE CANVAS MAPPING
+        let scrollProgress = 0;
         function getScrollAmount() { return -(loom.scrollWidth - window.innerWidth); }
-        const tween = gsap.to(loom, { x: getScrollAmount, ease: "none", scrollTrigger: { trigger: "#main-stage", start: "top top", end: () => `+=${getScrollAmount() * -1}`, pin: true, scrub: 1, invalidateOnRefresh: true, onUpdate: self => document.getElementById('fill').style.width = self.progress * 100 + "%" } });
+        
+        const tween = gsap.to(loom, { 
+            x: getScrollAmount, 
+            ease: "none", 
+            scrollTrigger: { 
+                trigger: "#main-stage", 
+                start: "top top", 
+                end: () => `+=${getScrollAmount() * -1}`, 
+                pin: true, 
+                scrub: 1, 
+                invalidateOnRefresh: true, 
+                onUpdate: self => {
+                    scrollProgress = self.progress; // Update global progress
+                    document.getElementById('fill').style.width = self.progress * 100 + "%";
+                }
+            } 
+        });
         
         // Navigation / Detail
         let currentIndex = -1;
@@ -336,21 +357,54 @@
             gsap.to(detailOverlay, { opacity: 0, duration: 0.3, onComplete: () => detailOverlay.style.display = 'none' });
         }
 
-        // NEURAL CANVAS ANIMATION
+        // NEURAL CANVAS ANIMATION (UPDATED FOR SCROLL)
         const canvas = document.getElementById('neural-canvas'), ctx = canvas.getContext('2d');
         let dots = [], mouse = {x:-1000, y:-1000};
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initDots(); };
         window.onmousemove = e => { mouse.x = e.clientX; mouse.y = e.clientY; };
-        function initDots() { dots = Array.from({length: 100}, () => ({x:Math.random()*canvas.width, y:Math.random()*canvas.height, vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5, size:Math.random()*1.5+.5, oSize:Math.random()*1.5+.5})); }
+        
+        function initDots() { 
+            dots = Array.from({length: 120}, () => ({
+                x:Math.random()*canvas.width, 
+                y:Math.random()*canvas.height, 
+                vx:(Math.random()-.5)*.5, 
+                vy:(Math.random()-.5)*.5, 
+                size:Math.random()*1.5+.5, 
+                oSize:Math.random()*1.5+.5
+            })); 
+        }
+
         function animate() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
+            
+            // Strategic animation increase based on scroll
+            const intensity = 1 + (scrollProgress * 2); 
+
             dots.forEach(d => {
-                d.x+=d.vx; d.y+=d.vy;
-                if(d.x<0||d.x>canvas.width) d.vx*=-1; if(d.y<0||d.y>canvas.height) d.vy*=-1;
+                // Apply scroll intensity to velocity
+                d.x += d.vx * intensity; 
+                d.y += d.vy * intensity;
+                
+                if(d.x<0||d.x>canvas.width) d.vx*=-1; 
+                if(d.y<0||d.y>canvas.height) d.vy*=-1;
+                
                 const dist = Math.hypot(d.x-mouse.x, d.y-mouse.y);
+                
+                // Mouse interaction still takes priority
                 d.size = dist<250 ? d.oSize*(1+(1-dist/250)*3) : d.oSize;
-                ctx.fillStyle = `rgba(255,255,255,${dist<250?.9:.3})`; ctx.beginPath(); ctx.arc(d.x,d.y,d.size,0,Math.PI*2); ctx.fill();
-                if(dist<220) { ctx.strokeStyle=`rgba(255,107,0,${1-dist/220})`; ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke(); }
+                
+                ctx.fillStyle = `rgba(255,255,255,${dist<250?.9:.3})`; 
+                ctx.beginPath(); 
+                ctx.arc(d.x,d.y,d.size,0,Math.PI*2); 
+                ctx.fill();
+                
+                if(dist<220) { 
+                    ctx.strokeStyle=`rgba(255,107,0,${1-dist/220})`; 
+                    ctx.beginPath(); 
+                    ctx.moveTo(d.x,d.y); 
+                    ctx.lineTo(mouse.x,mouse.y); 
+                    ctx.stroke(); 
+                }
             });
             requestAnimationFrame(animate);
         }
