@@ -92,6 +92,13 @@
             position: relative; display: flex; flex-direction: column; justify-content: center;
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer;
         }
+        
+        /* SPECIFIC FIX FOR INTRO CARD SPACING */
+        .intro-card {
+            width: 30vw; /* Slightly narrower to fit content */
+            margin-right: 15vw; /* Extra breathing room on mobile */
+        }
+
         .work-card.focus { transform: scale(1.05); z-index: 20; }
         .artifact-raw {
             width: 100%; display: flex; justify-content: center; align-items: center;
@@ -220,6 +227,10 @@
             #detail-title { font-size: 2rem; }
             
             .work-card { width: 85vw !important; margin-right: 15vw !important; }
+            
+            /* INTRO CARD MOBILE OVERRIDE */
+            .intro-card { width: 85vw !important; margin-right: 25vw !important; }
+            
             .viewport { padding-left: 5vw !important; padding-right: 5vw !important; }
             
             .text-5xl { font-size: 2.5rem !important; }
@@ -251,7 +262,7 @@
 
     <div id="main-stage">
         <div class="viewport" id="loom">
-            <div class="work-card flex flex-col justify-center" style="width: 25vw; flex-shrink: 0; margin-right: 5vw;">
+            <div class="work-card intro-card flex flex-col justify-center">
                 <h2 class="syncopate text-5xl leading-tight mb-6 text-white">
                     <span class="glitch" data-text="LA">LA</span><br>
                     <span class="text-orange-500 glitch" data-text="TRAME">TRAME</span><br>
