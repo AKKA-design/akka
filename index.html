@@ -93,10 +93,9 @@
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer;
         }
         
-        /* SPECIFIC FIX FOR INTRO CARD SPACING */
         .intro-card {
-            width: 30vw; /* Slightly narrower to fit content */
-            margin-right: 15vw; /* Extra breathing room on mobile */
+            width: 30vw;
+            margin-right: 15vw;
         }
 
         .work-card.focus { transform: scale(1.05); z-index: 20; }
@@ -227,8 +226,6 @@
             #detail-title { font-size: 2rem; }
             
             .work-card { width: 85vw !important; margin-right: 15vw !important; }
-            
-            /* INTRO CARD MOBILE OVERRIDE */
             .intro-card { width: 85vw !important; margin-right: 25vw !important; }
             
             .viewport { padding-left: 5vw !important; padding-right: 5vw !important; }
@@ -245,7 +242,7 @@
     <nav class="fixed top-0 w-full p-10 flex justify-between items-start">
         <div>
             <h1 class="syncopate text-2xl tracking-[0.5em] glitch" data-text="AKKA">AKKA</h1>
-            <p class="text-[9px] uppercase tracking-[0.8em] text-orange-500 mt-2 font-bold signal-pulse">Alchimiste Neural</p>
+            <p class="text-[9px] uppercase tracking-[0.8em] text-orange-500 mt-2 font-bold signal-pulse">Portfolio</p>
         </div>
         <div class="text-right">
             <p class="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-bold signal-pulse">Vol. 1 — Archive 50</p>
@@ -304,14 +301,61 @@
         const loom = document.getElementById('loom');
         const detailOverlay = document.getElementById('detail-overlay');
 
-        // --- DATA ARCHIVE (50 ITEMS) ---
-        const worksData = Array.from({length: 50}, (_, i) => ({
-            id: i + 1,
-            title: `ARCHIVE_${(i+1).toString().padStart(3,'0')}`,
-            desc: "Analyse conceptuelle de la structure et de la lumière. Baya Jury submission node."
-        }));
+        // --- CURATED DATA ARCHIVE (50 ITEMS) ---
+        const worksData = [
+            { id: 1, title: "Culinary Genesis", desc: "Digital spice mapping and aroma structure." },
+            { id: 2, title: "Mediterranean Alchemy", desc: "Fluid dynamics of regional flavor profiles." },
+            { id: 3, title: "Synaptic Culinary Grid", desc: "Data visualization of heritage recipes." },
+            { id: 4, title: "Artisan Network Flow", desc: "Industrial packaging structural analysis." },
+            { id: 5, title: "Traditional Data Stream", desc: "Simulation of ancient cultural data." },
+            { id: 6, title: "Tessellation Node", desc: "Geometric rendering of spice patterns." },
+            { id: 7, title: "Organic Loom Input", desc: "Natural texture and light intersection." },
+            { id: 8, title: "Spice Matrix Node", desc: "Neural network mapping of taste." },
+            { id: 9, title: "Mediterranean Pacing", desc: "Cinematic lighting through digital nodes." },
+            { id: 10, title: "Saharan Industrial Grid", desc: "Visual structure of desert industry." },
+            { id: 11, title: "Coastline Data Flow", desc: "Light refraction and spatial analysis." },
+            { id: 12, title: "Nomad Signal Mapping", desc: "Structural heritage visualization." },
+            { id: 13, title: "Exposition Node", desc: "Kinetic typography for cultural events." },
+            { id: 14, title: "Printify Concept Alpha", desc: "Algorithmic vision and interaction." },
+            { id: 15, title: "Origami Grid Studies", desc: "Minimalist structural analysis." },
+            { id: 16, title: "Dark Neural Node", desc: "Exclusion rendering of light." },
+            { id: 17, title: "Minimalist Trame", desc: "Architectural design studies." },
+            { id: 18, title: "Holiday Data Stream", desc: "Digital festive pattern analysis." },
+            { id: 19, title: "Neural Shadow Grid", desc: "Cyber-pattern simulation." },
+            { id: 20, title: "Sky Data Mapping", desc: "Atmospheric density analysis." },
+            { id: 21, title: "Geometric Matrix", desc: "Technical drawing simulation." },
+            { id: 22, title: "Moment Neural Input", desc: "Branding system conceptualization." },
+            { id: 23, title: "Packaging Trame", desc: "Industrial die-cut structural study." },
+            { id: 24, title: "Maritime Node Alpha", desc: "Cinematic light and water study." },
+            { id: 25, title: "Ocean Density Mapping", desc: "Fluid dynamic analysis." },
+            { id: 26, title: "Medical Network Link", desc: "Clinical data visualization study." },
+            { id: 27, title: "Fast Data Flow", desc: "High-velocity industrial rendering." },
+            { id: 28, title: "Synaptic Speed Analysis", desc: "Kinetic motion data rendering." },
+            { id: 29, title: "Industrial Taste Matrix", desc: "Commercial pattern mapping." },
+            { id: 30, title: "Pizza Neural Structure", desc: "Graphic tessellation studies." },
+            { id: 31, title: "Burger Data Stream", desc: "Volume and shadow analysis." },
+            { id: 32, title: "Sandwich Loom Study", desc: "Layered structural conceptualization." },
+            { id: 33, title: "NB Aesthetic Node", desc: "Minimalist beauty industry branding." },
+            { id: 34, title: "Fashion Trame Mapping", desc: "Guide and structural layout study." },
+            { id: 35, title: "Origami Brand Matrix", desc: "Visual identity conceptualization." },
+            { id: 36, title: "Question Loom Input", desc: "Digital interface conceptualization." },
+            { id: 37, title: "Identity System Grid", desc: "Stationery layout analysis." },
+            { id: 38, title: "Motion Data Node", desc: "High-speed rendering analysis." },
+            { id: 39, title: "Urban Speed Study", desc: "Cinematic street rendering." },
+            { id: 40, title: "Street Structure Map", desc: "Urban industrial layout analysis." },
+            { id: 41, title: "Natural Grid Node", desc: "Environmental texture simulation." },
+            { id: 42, title: "Coastline Data Matrix", desc: "Cinematic atmosphere study." },
+            { id: 43, title: "Poster Neural Mapping", desc: "Graphic print placement study." },
+            { id: 44, title: "Industrial Poster Grid", desc: "Atmospheric lighting study." },
+            { id: 45, title: "Speed Structure Map", desc: "Conceptual industrial flow study." },
+            { id: 46, title: "Future Data Stream", desc: "Cinematic commercial simulation." },
+            { id: 47, title: "Nomad Poster Study", desc: "Outdoor data structure rendering." },
+            { id: 48, title: "Tessellation Speed Node", desc: "Urban layout conceptualization." },
+            { id: 49, title: "Facade Data Mapping", desc: "Structural pattern analysis." },
+            { id: 50, title: "Thon-Sardine Trame", desc: "Product structural synthesis." }
+        ];
 
-        // INJECTION
+        // INJECTION LOGIC
         worksData.forEach((work, index) => {
             const card = document.createElement('div');
             card.className = 'work-card';
@@ -320,7 +364,7 @@
                 <div class="artifact-raw"><img src="work${work.id}.jpg" loading="lazy" alt="${work.title}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='"></div>
                 <div class="meta-bar">
                     <div>
-                        <p class="text-[9px] text-orange-500 mb-1 tracking-widest uppercase font-bold signal-pulse">${work.desc.substring(0,25)}...</p>
+                        <p class="text-[9px] text-orange-500 mb-1 tracking-widest uppercase font-bold signal-pulse">${work.desc.substring(0,35)}...</p>
                         <h3 class="syncopate text-xl uppercase tracking-tighter text-white glitch" data-text="${work.title}">${work.title}</h3>
                     </div>
                     <span class="text-3xl font-light opacity-10 syncopate text-white">#${work.id}</span>
